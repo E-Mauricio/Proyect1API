@@ -25,6 +25,19 @@ namespace Proyect1API.Controllers
             return Ok(products);
         }
 
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetProductById([FromRoute] Guid id)
+        {
+            var product = await _ProyectDbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(product);
+        } 
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] Product addProductRequest)
         {
@@ -36,5 +49,6 @@ namespace Proyect1API.Controllers
 
             return Ok(addProductRequest);
         }
+
     }
 }
