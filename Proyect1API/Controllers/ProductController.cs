@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Proyect1API.Data;
+using Proyect1API.Entity;
 using Proyect1API.Models;
 
 namespace Proyect1API.Controllers
@@ -133,6 +134,8 @@ namespace Proyect1API.Controllers
 
                     string imagePath = filePath + "\\image.png"; //what about 'fileName'?
 
+                    //string imagePath = filePath + "\\" + fileName + ".png";
+
                     if(System.IO.File.Exists(imagePath))
                     {
                         System.IO.File.Delete(imagePath);
@@ -162,6 +165,23 @@ namespace Proyect1API.Controllers
             }
 
             return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("RemoveImage/{id}")]
+        public ResponseType RemoveImage(string id)
+        {
+            string filePath = GetFilePath(new Guid(id));
+
+            string imagePath = filePath + "\\image.png";
+
+            if (System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath); //This deletes the img on the product folder.
+
+            }
+
+            return new ResponseType { Result = "pass", KyValue = id };
         }
 
         [NonAction]
