@@ -55,7 +55,7 @@ namespace Proyect1API.Controllers
             }
 
             return Ok(product);
-        } 
+        }
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] Product addProductRequest)
         {
@@ -79,9 +79,9 @@ namespace Proyect1API.Controllers
                 return NotFound();
             }
 
-            
+
             updatedProduct.Name = updateProductRequest.Name;
-            updatedProduct.Price = updateProductRequest.Price;  
+            updatedProduct.Price = updateProductRequest.Price;
             updateProductRequest.Quantity = updateProductRequest.Quantity;
             updateProductRequest.ProductImage = updateProductRequest.ProductImage;
 
@@ -95,7 +95,7 @@ namespace Proyect1API.Controllers
         public async Task<IActionResult> DeleteProduct([FromRoute] Guid id)
         {
             var deletedProduct = await _ProyectDbContext.Products.FindAsync(id);
-            
+
             if (deletedProduct == null)
             {
                 return NotFound();
@@ -111,6 +111,7 @@ namespace Proyect1API.Controllers
         //Images controllers.
         [HttpPost]
         [Route("UploadImage")]
+        [RequestFormLimits(MultipartBodyLengthLimit = 104857600)] //This sets the file limit to 100mbs. /Doesn't work.
         public async Task<ActionResult> UploadImage()
         {
             bool result = false;
@@ -161,7 +162,7 @@ namespace Proyect1API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                //return BadRequest(ex.Message); This should be addressed.
             }
 
             return Ok(result);
