@@ -49,6 +49,7 @@ namespace Proyect1API.Controllers
         {
             var product = await _ProyectDbContext.Products.FirstOrDefaultAsync(p => p.Id == id);
 
+
             if (product == null)
             {
                 return NotFound();
