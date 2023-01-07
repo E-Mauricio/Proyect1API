@@ -66,6 +66,7 @@ namespace Proyect1API.Controllers
 
             return Ok(product);
         }
+
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] Product addProductRequest)
         {
