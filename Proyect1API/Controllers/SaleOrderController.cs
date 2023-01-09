@@ -34,9 +34,9 @@ namespace Proyect1API.Controllers
 
         [HttpGet]
         [Route("{id:int}")]
-        public async Task<IActionResult> GetProductById([FromRoute] int id)
+        public async Task<IActionResult> GetSaleOrderById([FromRoute] int id)
         {
-            var SO = await _ProyectDbContext.SaleOrder.FirstOrDefaultAsync(p => p.OrderId == id);
+            SaleOrder SO = await _ProyectDbContext.SaleOrder.FirstOrDefaultAsync(p => p.OrderId == id);
 
             if (SO == null)
             {
@@ -46,6 +46,30 @@ namespace Proyect1API.Controllers
             {
                 return Ok(SO);
             }
+        }
+
+        [HttpPut]
+        [Route("{orderId:int}")]
+        public async Task<IActionResult> UpdateProduct([FromRoute] int orderId, SaleOrder updateSaleOrderRequest)
+        {
+            var updatedSO = await _ProyectDbContext.SaleOrder.FindAsync(orderId);
+
+            if (updatedSO == null)
+            {
+                return NotFound();
+            }
+            else
+            {
+                updatedSO.OrderId = updateSaleOrderRequest.OrderId;
+
+                updatedSO.Address = updateSaleOrderRequest.Address;
+
+                updatedSO.Payment = updateSaleOrderRequest.Payment;
+
+                await _ProyectDbContext.SaveChangesAsync();
+
+                return Ok(updatedSO);
+            }               
         }
 
 
