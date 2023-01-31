@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using Proyect1API.Data;
 using Proyect1API.Entity;
 using Proyect1API.Models;
+using System.Formats.Asn1;
+using System.Runtime.CompilerServices;
 
 namespace Proyect1API.Controllers
 {
@@ -37,7 +40,7 @@ namespace Proyect1API.Controllers
             }
             else //When it's null.
             {
-
+                return NotFound();
             }
 
             return Ok(products);
@@ -63,9 +66,33 @@ namespace Proyect1API.Controllers
                 //When it's null.
             }
 
-
             return Ok(product);
         }
+
+
+        [HttpGet]
+        [Route("Search/{name}")]
+        public async Task<IActionResult> GetProductByName([FromRoute] string name)
+        {
+            var products = await _ProyectDbContext.Products.Where(p => p.Name == name).ToListAsync();
+
+
+            if (products != null && products.Count > 0)
+            {
+                products.ForEach(product =>
+                {
+                    product.ProductImage = GetImagebyProduct(product.Id);
+                });
+            }
+            else //When it's null.
+            {
+                return NotFound();
+            }
+
+            return Ok(products);
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> AddProduct([FromBody] Product addProductRequest)
