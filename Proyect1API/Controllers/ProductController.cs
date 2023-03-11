@@ -61,11 +61,7 @@ namespace Proyect1API.Controllers
             {
                 product.ProductImage = GetImagebyProduct(product.Id); 
             }
-            else
-            {
-                //When it's null.
-            }
-
+          
             return Ok(product);
         }
 
