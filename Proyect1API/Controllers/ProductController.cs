@@ -16,6 +16,7 @@ namespace Proyect1API.Controllers
         private readonly ProyectDbContext _ProyectDbContext;
 
         private readonly IWebHostEnvironment _environment;
+
         public ProductController(ProyectDbContext proyectDbContext, IWebHostEnvironment environment)
         {
             _ProyectDbContext = proyectDbContext;
