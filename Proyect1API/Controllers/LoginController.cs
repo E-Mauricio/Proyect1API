@@ -37,17 +37,19 @@ namespace Proyect1API.Controllers
         public async Task<IActionResult> CreateUser([FromBody] Users newUser)
         {
 
-            await _ProyectDbContext.Users.AddAsync(newUser);
+            var newlyCreatedUser = newUser;
+
+            await _ProyectDbContext.Users.AddAsync(newlyCreatedUser);
 
             await _ProyectDbContext.SaveChangesAsync();
 
-            return Ok();
+            return Ok(newlyCreatedUser);
         }
 
         [HttpPost]
         public async Task<IActionResult> LogIn([FromBody] Users user)
         {
-            var existUser = await _ProyectDbContext.Users.FirstAsync(p => p.Email == user.Email && p.Password == user.Password);
+            var existUser = await _ProyectDbContext.Users.FirstOrDefaultAsync(p => p.Email == user.Email && p.Password == user.Password);
 
             if (existUser != null)
             {
@@ -65,7 +67,7 @@ namespace Proyect1API.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti,
                 Guid.NewGuid().ToString())
              }),
-                    Expires = DateTime.UtcNow.AddMinutes(5),
+                    Expires = DateTime.UtcNow.AddMinutes(5), //How long will the token be valid.
                     Issuer = issuer,
                     Audience = audience,
                     SigningCredentials = new SigningCredentials
@@ -76,10 +78,30 @@ namespace Proyect1API.Controllers
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var jwtToken = tokenHandler.WriteToken(token);
                 var stringToken = tokenHandler.WriteToken(token);
-                return Ok(stringToken);
+
+                existUser.Token = stringToken;
+
+                await _ProyectDbContext.SaveChangesAsync();
+
+                return Ok(existUser);
             }
             return NotFound("Email or Password are incorrect. Try Again.");
 
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Sample(string username, string password)
+        {
+            var products = await _ProyectDbContext.Products.ToListAsync();
+
+            if (products != null)
+            {
+                return Ok(products);
+            }
+            else
+            {
+                return BadRequest();
+            }
         }
     }
 }

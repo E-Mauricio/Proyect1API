@@ -231,7 +231,9 @@ namespace Proyect1API.Controllers
         {
             string ImageUrl = string.Empty;
 
-            string HostUrl = "https://localhost:7198";
+            //string HostUrl = "https://localhost:7198";
+            //string HostUrl = "https://localhost:5001";
+            string HostUrl = "https://localhost:5000";
 
             string filePath = GetFilePath(productId);
 
