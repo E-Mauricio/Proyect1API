@@ -64,8 +64,8 @@ namespace Proyect1API.Controllers
                 new Claim("Id", Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Sub, existUser.Email),
                 new Claim(JwtRegisteredClaimNames.Email, existUser.Email),
-                new Claim(JwtRegisteredClaimNames.Jti,
-                Guid.NewGuid().ToString())
+                //new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
+                new Claim("Role", "Admin")
              }),
                     Expires = DateTime.UtcNow.AddMinutes(5), //How long will the token be valid.
                     Issuer = issuer,

@@ -1,11 +1,17 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
 using Proyect1API.Data;
 using Proyect1API.Entity;
+using Proyect1API.JwtToken;
 using Proyect1API.Models;
 using System.Formats.Asn1;
+using System.IdentityModel.Tokens.Jwt;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
+using System.Text;
 
 namespace Proyect1API.Controllers
 {
@@ -58,11 +64,11 @@ namespace Proyect1API.Controllers
             {
                 return NotFound();
             }
-            else if(product != null)
+            else if (product != null)
             {
-                product.ProductImage = GetImagebyProduct(product.Id); 
+                product.ProductImage = GetImagebyProduct(product.Id);
             }
-          
+
             return Ok(product);
         }
 
@@ -92,8 +98,15 @@ namespace Proyect1API.Controllers
 
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddProduct([FromBody] Product addProductRequest)
         {
+            //How to validate a token claim!!
+            //var authToken = new JwtSecurityToken(worker.Token);
+
+            //string tokenRole = authToken.Claims.First(c => c.Type == "Role").Value;
+
+
             addProductRequest.Id = Guid.NewGuid(); //Because is 'safer' to create the Id here instead of trusting Angular with that task.
 
             await _ProyectDbContext.Products.AddAsync(addProductRequest);
@@ -101,10 +114,12 @@ namespace Proyect1API.Controllers
             await _ProyectDbContext.SaveChangesAsync();
 
             return Ok(addProductRequest);
+
         }
 
         [HttpPut]
         [Route("{id:Guid}")]
+        [Authorize]
         public async Task<IActionResult> UpdateProduct([FromRoute] Guid id, Product updateProductRequest)
         {
             var updatedProduct = await _ProyectDbContext.Products.FindAsync(id);
@@ -113,7 +128,6 @@ namespace Proyect1API.Controllers
             {
                 return NotFound();
             }
-
 
             updatedProduct.Name = updateProductRequest.Name;
             updatedProduct.Price = updateProductRequest.Price;
@@ -127,6 +141,7 @@ namespace Proyect1API.Controllers
 
         [HttpDelete]
         [Route("{id:Guid}")]
+        [Authorize]
         public async Task<IActionResult> DeleteProduct([FromRoute] Guid id)
         {
             var deletedProduct = await _ProyectDbContext.Products.FindAsync(id);
@@ -145,6 +160,7 @@ namespace Proyect1API.Controllers
 
         //Images controllers.
         [HttpPost]
+        [Authorize]
         [Route("UploadImage")]
         [RequestFormLimits(MultipartBodyLengthLimit = 104857600)] //This sets the file limit to 100mbs. /Doesn't work.
         public async Task<ActionResult> UploadImage()
@@ -155,7 +171,7 @@ namespace Proyect1API.Controllers
             {
                 var _uploadedFile = Request.Form.Files;
 
-                foreach(IFormFile source in _uploadedFile)
+                foreach (IFormFile source in _uploadedFile)
                 {
                     string fileName = source.FileName;
 
@@ -163,7 +179,7 @@ namespace Proyect1API.Controllers
 
                     var pId = Path.GetFileNameWithoutExtension(fileName);
 
-                    if(!System.IO.Directory.Exists(filePath))
+                    if (!System.IO.Directory.Exists(filePath))
                     {
                         System.IO.Directory.CreateDirectory(filePath);
                     }
@@ -172,7 +188,7 @@ namespace Proyect1API.Controllers
 
                     //string imagePath = filePath + "\\" + fileName + ".png";
 
-                    if(System.IO.File.Exists(imagePath))
+                    if (System.IO.File.Exists(imagePath))
                     {
                         System.IO.File.Delete(imagePath);
                     }
@@ -197,13 +213,14 @@ namespace Proyect1API.Controllers
             }
             catch (Exception ex)
             {
-                //return BadRequest(ex.Message); This should be addressed.
+                return BadRequest(ex.Message); //This should be addressed.
             }
 
             return Ok(result);
         }
 
         [HttpGet]
+        [Authorize]
         [Route("RemoveImage/{id}")]
         public ResponseType RemoveImage(string id)
         {
@@ -239,7 +256,7 @@ namespace Proyect1API.Controllers
 
             string imagePath = filePath + "\\image.png";
 
-            if(!System.IO.File.Exists(imagePath))
+            if (!System.IO.File.Exists(imagePath))
             {
                 ImageUrl = HostUrl + "/Uploads/common/noimage.png";
             }
@@ -247,7 +264,7 @@ namespace Proyect1API.Controllers
             {
                 ImageUrl = HostUrl + "/Uploads/Product/" + productId + "/image.png";
             }
-            
+
             return ImageUrl;
 
         }

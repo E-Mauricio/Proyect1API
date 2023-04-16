@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Proyect1API.Data;
 using Proyect1API.Models;
@@ -9,41 +10,32 @@ namespace Proyect1API.Controllers
     [Route("api/[controller]")]
     public class SaleOrderController : Controller
     {
-  
-            private readonly ProyectDbContext _ProyectDbContext;
 
-            private readonly IWebHostEnvironment _environment;
-            public SaleOrderController(ProyectDbContext proyectDbContext, IWebHostEnvironment environment)
-            {
-                _ProyectDbContext = proyectDbContext;
+        private readonly ProyectDbContext _ProyectDbContext;
 
-                _environment = environment;
-            }
+        private readonly IWebHostEnvironment _environment;
+        public SaleOrderController(ProyectDbContext proyectDbContext, IWebHostEnvironment environment)
+        {
+            _ProyectDbContext = proyectDbContext;
 
-            public ProyectDbContext ProyectDbContext { get; }
+            _environment = environment;
+        }
 
-            [HttpPost]
-            public async Task<IActionResult> CreateSO([FromBody] SaleOrder CreateSO)
-            {
-                await _ProyectDbContext.SaleOrder.AddAsync(CreateSO);
+        public ProyectDbContext ProyectDbContext { get; }
 
-                await _ProyectDbContext.SaveChangesAsync();
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> CreateSO([FromBody] SaleOrder CreateSO)
+        {
+            await _ProyectDbContext.SaleOrder.AddAsync(CreateSO);
 
-                return Ok(CreateSO);
-            }
+            await _ProyectDbContext.SaveChangesAsync();
 
-
-
-
-
-
-
-
-
-
-
+            return Ok(CreateSO);
+        }
 
         [HttpGet]
+        [Authorize]
         [Route("{id:int}")]
         public async Task<IActionResult> GetSaleOrderById([FromRoute] int id)
         {
@@ -60,6 +52,7 @@ namespace Proyect1API.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         [Route("{orderId:int}")]
         public async Task<IActionResult> UpdateSaleOrder([FromRoute] int orderId, SaleOrder updateSaleOrderRequest)
         {
@@ -94,9 +87,8 @@ namespace Proyect1API.Controllers
                 await _ProyectDbContext.SaveChangesAsync();
 
                 return Ok(updatedSO);
-            }               
+            }
         }
-
 
     }
 }
