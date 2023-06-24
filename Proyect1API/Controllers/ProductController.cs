@@ -33,7 +33,7 @@ namespace Proyect1API.Controllers
         public ProyectDbContext ProyectDbContext { get; }
 
         [HttpGet]
-        public async Task<ActionResult> GetAllProducts()
+        public async Task<ActionResult<List<Product>>> GetAllProducts()
         {
             var products = await _ProyectDbContext.Products.ToListAsync();
 
@@ -96,7 +96,7 @@ namespace Proyect1API.Controllers
         }
 
 
-
+        //FIX THE IMAGE WHEN UPLOADING A NEW PRODUCT < - - - - - - - - URGENT.!!!!!!!!!!111!!!!111!!!1!!!11
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> AddProduct([FromBody] Product addProductRequest)
