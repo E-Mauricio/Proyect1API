@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -18,8 +19,13 @@ namespace UnitTest
         private readonly ProyectDbContext _dbContext;
         private readonly ProductController _productController;
 
+        private readonly Mock<ProductController> _productClass;
+
+
         public UnitTest1()
         {
+            _productClass = new Mock<ProductController>();
+
             // Create an in-memory database
             var options = new DbContextOptionsBuilder<ProyectDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
@@ -79,6 +85,52 @@ namespace UnitTest
                     ProductImage = "c:/code/c/boook"
                 },
             };
+        }
+
+        [Fact]
+        public async Task DeviceController_GetAsync_ReturnList()
+        {
+            //Arrange
+            var list = GetData();
+
+            var expectedResult = new OkObjectResult(list);
+
+            _productClass.Setup(x => x.GetAsync())
+                .ReturnsAsync(expectedResult);
+
+            //Act
+            var actionResult = await _productClass.Object.GetAsync();
+
+            //Assert
+            Assert.IsType<OkObjectResult>(actionResult);
+
+            var okResult = actionResult as OkObjectResult;
+            Assert.NotNull(okResult);
+
+            var result = Assert.IsAssignableFrom<IEnumerable<ConnectedDevice>>(okResult.Value);
+            Assert.Equal(list.Count, result.Count());
+        }
+
+        private List<ConnectedDevice> GetData()
+        {
+            List<ConnectedDevice> data = new List<ConnectedDevice>();
+
+            var device = new ConnectedDevice();
+
+            device.PairedDeviceId = "1234";
+            device.DeviceName = "test";
+            device.DeviceId = "9876";
+
+            data.Add(device);
+
+            device.PairedDeviceId = "1234";
+            device.DeviceName = "test";
+            device.DeviceId = "9876";
+
+            data.Add(device);
+
+            return data;
+
         }
     }
 }

@@ -33,6 +33,14 @@ namespace Proyect1API.Controllers
         public ProyectDbContext ProyectDbContext { get; }
 
         [HttpGet]
+        public virtual async Task<IActionResult> GetAsync()
+        {
+            var devices = await _ProyectDbContext.Products.ToListAsync();
+
+            return Ok(devices);
+        }
+
+        [HttpGet]
         public async Task<ActionResult<List<Product>>> GetAllProducts()
         {
             var products = await _ProyectDbContext.Products.ToListAsync();
