@@ -1,12 +1,11 @@
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using Moq;
+using Moq.EntityFrameworkCore;
 using Proyect1API.Controllers;
 using Proyect1API.Data;
 using Proyect1API.Models;
-using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -19,71 +18,63 @@ namespace UnitTest
     public class UnitTest1
     {
         private readonly Mock<ProyectDbContext> _dbContext;
-        private readonly ProductController _productController;
+        private  ProductController _productController;
 
         public UnitTest1()
         {
-            // Create a mock DbSet
-            var mockSet = new Mock<Microsoft.EntityFrameworkCore.DbSet<ConnectedDevice>>();
-
-            // Configure mock DbSet to return test data
-            mockSet.As<IQueryable<ConnectedDevice>>()
-                .Setup(m => m.Provider)
-                .Returns(GetTestData().AsQueryable().Provider);
-            mockSet.As<IQueryable<ConnectedDevice>>()
-                .Setup(m => m.Expression)
-                .Returns(GetTestData().AsQueryable().Expression);
-            mockSet.As<IQueryable<ConnectedDevice>>()
-                .Setup(m => m.ElementType)
-                .Returns(GetTestData().AsQueryable().ElementType);
-            mockSet.As<IQueryable<ConnectedDevice>>()
-                .Setup(m => m.GetEnumerator())
-                .Returns(GetTestData().AsQueryable().GetEnumerator());
-
-            // Configure mock DbSet to support ToListAsync
-            mockSet.As<IAsyncEnumerable<ConnectedDevice>>()
-                .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
-                .Returns(new TestAsyncEnumerator<ConnectedDevice>(GetTestData().GetEnumerator()));
-
-            // Create a mock DbContext and set up the behavior
             _dbContext = new Mock<ProyectDbContext>();
-            _dbContext.Setup(db => db.ConnectedDevices).Returns(mockSet.Object);
 
-            _productController = new ProductController(_dbContext.Object, null);
+           
         }
 
         [Fact]
-        public async Task DeviceController_GetAsync_ReturnList()
+        public async void DeviceController_GetAsync_ReturnList()
         {
-            var result = await _productController.GetAsync();
+            //arrange
+         var deviceList = GetTestData().AsQueryable();
+
+            
+            //var x3 = x1.ToListAsync();  
+            var mockSet = deviceList.GetMockSet(); // Converts the list to Mock Dbset
+
+            _dbContext.Setup(x => x.ConnectedDevices).ReturnsDbSet(GetTestData());
+               //.ReturnsDbSet(new List<Product>() { new Product()}.AsQueryable().GetMockSet().Object);
+
+            _productController = new ProductController(_dbContext.Object, null);
+
+            //Act
+            var result = await  _productController.GetAsync();
 
             //Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.IsAssignableFrom<List<ConnectedDevice>>(okResult.Value);
+            Assert.IsType<OkObjectResult>(result);
 
+            var okResult = result as OkObjectResult;
 
+            var convertedObject = Assert.IsAssignableFrom<List<ConnectedDevice>>(okResult.Value);
+
+            Assert.Equal(GetTestData().Count, convertedObject.Count);
+            Assert.Equal("9876", convertedObject.First().DeviceId);
+
+            Assert.NotNull(convertedObject);
         }
 
         private List<ConnectedDevice> GetTestData()
         {
             List<ConnectedDevice> data = new List<ConnectedDevice>();
 
-            var device = new ConnectedDevice();
+            var device1 = new ConnectedDevice();
+            device1.PairedDeviceId = "1234";
+            device1.DeviceName = "test1";
+            device1.DeviceId = "9876";
+            data.Add(device1);
 
-            device.PairedDeviceId = "1234";
-            device.DeviceName = "test";
-            device.DeviceId = "9876";
-
-            data.Add(device);
-
-            device.PairedDeviceId = "1234";
-            device.DeviceName = "test";
-            device.DeviceId = "9876";
-
-            data.Add(device);
+            var device2 = new ConnectedDevice();
+            device2.PairedDeviceId = "5678";
+            device2.DeviceName = "test2";
+            device2.DeviceId = "5432";
+            data.Add(device2);
 
             return data;
-
         }
     }
 }

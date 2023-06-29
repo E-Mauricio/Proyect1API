@@ -15,11 +15,11 @@ namespace Proyect1API.Data
 
         }
 
-        public DbSet<Product> Products { get; set; }    
+        public virtual DbSet<Product> Products { get; set; }    
 
-        public DbSet<SaleOrder> SaleOrder { get; set; }
+        public virtual DbSet<SaleOrder> SaleOrder { get; set; }
 
-        public DbSet<Users> Users { get; set; } 
+        public virtual DbSet<Users> Users { get; set; } 
 
         public virtual DbSet<ConnectedDevice> ConnectedDevices { get; set; }
     }

@@ -33,6 +33,7 @@ namespace Proyect1API.Controllers
         public ProyectDbContext ProyectDbContext { get; }
 
         [HttpGet]
+        [Route("GetAsync")]
         public async Task<IActionResult> GetAsync()
         {
             var devices = await _ProyectDbContext.ConnectedDevices.ToListAsync();
