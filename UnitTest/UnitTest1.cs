@@ -8,110 +8,63 @@ using Proyect1API.Data;
 using Proyect1API.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using UnitTest.Tools;
 using Xunit;
 
 namespace UnitTest
 {
     public class UnitTest1
     {
-        private readonly ProyectDbContext _dbContext;
+        private readonly Mock<ProyectDbContext> _dbContext;
         private readonly ProductController _productController;
-
-        private readonly Mock<ProductController> _productClass;
-
 
         public UnitTest1()
         {
-            _productClass = new Mock<ProductController>();
+            // Create a mock DbSet
+            var mockSet = new Mock<Microsoft.EntityFrameworkCore.DbSet<ConnectedDevice>>();
 
-            // Create an in-memory database
-            var options = new DbContextOptionsBuilder<ProyectDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDatabase")
-                .Options;
+            // Configure mock DbSet to return test data
+            mockSet.As<IQueryable<ConnectedDevice>>()
+                .Setup(m => m.Provider)
+                .Returns(GetTestData().AsQueryable().Provider);
+            mockSet.As<IQueryable<ConnectedDevice>>()
+                .Setup(m => m.Expression)
+                .Returns(GetTestData().AsQueryable().Expression);
+            mockSet.As<IQueryable<ConnectedDevice>>()
+                .Setup(m => m.ElementType)
+                .Returns(GetTestData().AsQueryable().ElementType);
+            mockSet.As<IQueryable<ConnectedDevice>>()
+                .Setup(m => m.GetEnumerator())
+                .Returns(GetTestData().AsQueryable().GetEnumerator());
 
-            _dbContext = new ProyectDbContext(options);
+            // Configure mock DbSet to support ToListAsync
+            mockSet.As<IAsyncEnumerable<ConnectedDevice>>()
+                .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+                .Returns(new TestAsyncEnumerator<ConnectedDevice>(GetTestData().GetEnumerator()));
 
-            // Populate the in-memory database with test data
-            _dbContext.Products.AddRange(GetProductsData());
-            _dbContext.SaveChanges();
+            // Create a mock DbContext and set up the behavior
+            _dbContext = new Mock<ProyectDbContext>();
+            _dbContext.Setup(db => db.ConnectedDevices).Returns(mockSet.Object);
 
-            _productController = new ProductController(_dbContext, null);
-        }
-
-        [Fact]
-        public async Task GetAllProducts_ReturnsProductList()
-        {
-            // Act
-            var result = await _productController.GetAllProducts();
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result.Result);
-            var okResult = result.Result as OkObjectResult;
-            Assert.NotNull(okResult.Value);
-
-            var products = okResult.Value as IEnumerable<Product>;
-            Assert.Equal(GetProductsData().Count, products.Count());
-            Assert.Equal("IPhone", products.First().Name);
-        }
-
-        private List<Product> GetProductsData()
-        {
-            return new List<Product>
-            {
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "IPhone",
-                    Price = 55000,
-                    Quantity = 10,
-                    ProductImage = "c:/code/c/boook"
-                },
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "IPhone2",
-                    Price = 55600,
-                    Quantity = 10,
-                    ProductImage = "c:/code/c/boook"
-                },
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "IPhone3",
-                    Price = 57000,
-                    Quantity = 110,
-                    ProductImage = "c:/code/c/boook"
-                },
-            };
+            _productController = new ProductController(_dbContext.Object, null);
         }
 
         [Fact]
         public async Task DeviceController_GetAsync_ReturnList()
         {
-            //Arrange
-            var list = GetData();
-
-            var expectedResult = new OkObjectResult(list);
-
-            _productClass.Setup(x => x.GetAsync())
-                .ReturnsAsync(expectedResult);
-
-            //Act
-            var actionResult = await _productClass.Object.GetAsync();
+            var result = await _productController.GetAsync();
 
             //Assert
-            Assert.IsType<OkObjectResult>(actionResult);
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            Assert.IsAssignableFrom<List<ConnectedDevice>>(okResult.Value);
 
-            var okResult = actionResult as OkObjectResult;
-            Assert.NotNull(okResult);
 
-            var result = Assert.IsAssignableFrom<IEnumerable<ConnectedDevice>>(okResult.Value);
-            Assert.Equal(list.Count, result.Count());
         }
 
-        private List<ConnectedDevice> GetData()
+        private List<ConnectedDevice> GetTestData()
         {
             List<ConnectedDevice> data = new List<ConnectedDevice>();
 

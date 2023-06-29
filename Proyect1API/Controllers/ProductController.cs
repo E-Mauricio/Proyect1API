@@ -33,9 +33,9 @@ namespace Proyect1API.Controllers
         public ProyectDbContext ProyectDbContext { get; }
 
         [HttpGet]
-        public virtual async Task<IActionResult> GetAsync()
+        public async Task<IActionResult> GetAsync()
         {
-            var devices = await _ProyectDbContext.Products.ToListAsync();
+            var devices = await _ProyectDbContext.ConnectedDevices.ToListAsync();
 
             return Ok(devices);
         }
