@@ -41,8 +41,15 @@ namespace UnitTest
             var response = await _productController.GetAsync();
 
             // Assert
-            var okResult = Assert.IsType<OkObjectResult>(response);
+
+            //This Assert checks if the response of the Controller is an HTTP 200 OK status code
+            var okResult = Assert.IsType<OkObjectResult>(response); 
+
+            //This Assert is validating if okResult.Value can be assign to a List of type ConnectedDevice
             var result = Assert.IsAssignableFrom<List<ConnectedDevice>>(okResult.Value);
+
+            //And here I am validating if the .Count of listOfData is equal to the .Count the var result is returning.
+            //It verifies if the number of items in the expected list matches the number of items in the actual list.
             Assert.Equal(listOfData.Count, result.Count);
         }
 
