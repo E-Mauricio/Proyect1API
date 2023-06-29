@@ -18,32 +18,32 @@ namespace UnitTest
     public class UnitTest1
     {
         private readonly Mock<ProyectDbContext> _dbContext;
-        private  ProductController _productController;
+        private ProductController _productController;
 
         public UnitTest1()
         {
             _dbContext = new Mock<ProyectDbContext>();
 
-           
+
         }
 
         [Fact]
         public async void DeviceController_GetAsync_ReturnList()
         {
             //arrange
-         var deviceList = GetTestData().AsQueryable();
+            var deviceList = GetTestData().AsQueryable();
 
-            
+
             //var x3 = x1.ToListAsync();  
             var mockSet = deviceList.GetMockSet(); // Converts the list to Mock Dbset
 
             _dbContext.Setup(x => x.ConnectedDevices).ReturnsDbSet(GetTestData());
-               //.ReturnsDbSet(new List<Product>() { new Product()}.AsQueryable().GetMockSet().Object);
+            //.ReturnsDbSet(new List<Product>() { new Product()}.AsQueryable().GetMockSet().Object);
 
             _productController = new ProductController(_dbContext.Object, null);
 
             //Act
-            var result = await  _productController.GetAsync();
+            var result = await _productController.GetAsync();
 
             //Assert
             Assert.IsType<OkObjectResult>(result);
