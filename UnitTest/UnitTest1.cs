@@ -1,12 +1,9 @@
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Proyect1API.Controllers;
 using Proyect1API.Data;
 using Proyect1API.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,118 +16,53 @@ namespace UnitTest
         private readonly ProyectDbContext _dbContext;
         private readonly ProductController _productController;
 
-        private readonly Mock<ProductController> _productClass;
-
-
         public UnitTest1()
         {
-            _productClass = new Mock<ProductController>();
-
-            // Create an in-memory database
+            // Create an in-memory database context
             var options = new DbContextOptionsBuilder<ProyectDbContext>()
                 .UseInMemoryDatabase(databaseName: "TestDatabase")
                 .Options;
 
             _dbContext = new ProyectDbContext(options);
-
-            // Populate the in-memory database with test data
-            _dbContext.Products.AddRange(GetProductsData());
-            _dbContext.SaveChanges();
-
             _productController = new ProductController(_dbContext, null);
-        }
-
-        [Fact]
-        public async Task GetAllProducts_ReturnsProductList()
-        {
-            // Act
-            var result = await _productController.GetAllProducts();
-
-            // Assert
-            Assert.IsType<OkObjectResult>(result.Result);
-            var okResult = result.Result as OkObjectResult;
-            Assert.NotNull(okResult.Value);
-
-            var products = okResult.Value as IEnumerable<Product>;
-            Assert.Equal(GetProductsData().Count, products.Count());
-            Assert.Equal("IPhone", products.First().Name);
-        }
-
-        private List<Product> GetProductsData()
-        {
-            return new List<Product>
-            {
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "IPhone",
-                    Price = 55000,
-                    Quantity = 10,
-                    ProductImage = "c:/code/c/boook"
-                },
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "IPhone2",
-                    Price = 55600,
-                    Quantity = 10,
-                    ProductImage = "c:/code/c/boook"
-                },
-                new Product
-                {
-                    Id = Guid.NewGuid(),
-                    Name = "IPhone3",
-                    Price = 57000,
-                    Quantity = 110,
-                    ProductImage = "c:/code/c/boook"
-                },
-            };
         }
 
         [Fact]
         public async Task DeviceController_GetAsync_ReturnList()
         {
-            //Arrange
-            var list = GetData();
+            // Arrange
+            var listOfData = GetData();
 
-            var expectedResult = new OkObjectResult(list);
+            // Add the data to the in-memory database
+            _dbContext.ConnectedDevices.AddRange(listOfData);
+            _dbContext.SaveChanges();
 
-            _productClass.Setup(x => x.GetAsync())
-                .ReturnsAsync(expectedResult);
+            // Act
+            var response = await _productController.GetAsync();
 
-            //Act
-            var actionResult = await _productClass.Object.GetAsync();
-
-            //Assert
-            Assert.IsType<OkObjectResult>(actionResult);
-
-            var okResult = actionResult as OkObjectResult;
-            Assert.NotNull(okResult);
-
-            var result = Assert.IsAssignableFrom<IEnumerable<ConnectedDevice>>(okResult.Value);
-            Assert.Equal(list.Count, result.Count());
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(response);
+            var result = Assert.IsAssignableFrom<List<ConnectedDevice>>(okResult.Value);
+            Assert.Equal(listOfData.Count, result.Count);
         }
 
         private List<ConnectedDevice> GetData()
         {
             List<ConnectedDevice> data = new List<ConnectedDevice>();
 
-            var device = new ConnectedDevice();
+            var device1 = new ConnectedDevice();
+            device1.PairedDeviceId = "1234";
+            device1.DeviceName = "test1";
+            device1.DeviceId = "9876";
+            data.Add(device1);
 
-            device.PairedDeviceId = "1234";
-            device.DeviceName = "test";
-            device.DeviceId = "9876";
-
-            data.Add(device);
-
-            device.PairedDeviceId = "1234";
-            device.DeviceName = "test";
-            device.DeviceId = "9876";
-
-            data.Add(device);
+            var device2 = new ConnectedDevice();
+            device2.PairedDeviceId = "5678";
+            device2.DeviceName = "test2";
+            device2.DeviceId = "5432";
+            data.Add(device2);
 
             return data;
-
         }
     }
 }

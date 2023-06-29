@@ -15,5 +15,7 @@ namespace Proyect1API.Data
         public DbSet<SaleOrder> SaleOrder { get; set; }
 
         public DbSet<Users> Users { get; set; } 
+
+        public DbSet<ConnectedDevice> ConnectedDevices { get; set; }
     }
 }

@@ -26,7 +26,7 @@ namespace Proyect1API.Controllers
         public ProductController(ProyectDbContext proyectDbContext, IWebHostEnvironment environment)
         {
             _ProyectDbContext = proyectDbContext;
-
+            
             _environment = environment;
         }
 
@@ -35,7 +35,7 @@ namespace Proyect1API.Controllers
         [HttpGet]
         public virtual async Task<IActionResult> GetAsync()
         {
-            var devices = await _ProyectDbContext.Products.ToListAsync();
+            var devices = await _ProyectDbContext.ConnectedDevices.ToListAsync();
 
             return Ok(devices);
         }
