@@ -29,4 +29,8 @@
     <ProjectReference Include="..\Proyect1API\Proyect1API.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Links\" />
+  </ItemGroup>
+
 </Project>

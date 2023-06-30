@@ -1,0 +1,21 @@
+1 - https://stackoverflow.com/questions/57001556/unsupported-expression-non-overridable-members-here-may-not-be-used-in-setu
+
+2 - https://stackoverflow.com/questions/54219742/mocking-ef-core-dbcontext-and-dbset
+
+3 - https://code-maze.com/ef-core-mock-dbcontext/
+
+4 - https://www.devonblog.com/software-development/mock-asynchronous-repository-with-ef-core/
+
+5 - https://www.appsloveworld.com/entity-framework-core/100/1/converting-iqueryable-to-implement-iasyncenumerable 
+
+6 - https://expertcodeblog.wordpress.com/2018/02/19/net-core-2-0-resolve-error-the-source-iqueryable-doesnt-implement-iasyncenumerable/
+
+7 - https://stackoverflow.com/questions/67968109/how-to-test-api-controller-with-xunit
+
+8 - https://learn.microsoft.com/en-us/aspnet/core/mvc/controllers/testing?view=aspnetcore-7.0
+
+9 - https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test 
+
+10 - https://learn.microsoft.com/en-us/visualstudio/test/walkthrough-creating-and-running-unit-tests-for-managed-code?view=vs-2022
+
+
