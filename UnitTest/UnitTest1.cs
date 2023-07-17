@@ -23,8 +23,6 @@ namespace UnitTest
         public UnitTest1()
         {
             _dbContext = new Mock<ProyectDbContext>();
-
-
         }
 
         [Fact]

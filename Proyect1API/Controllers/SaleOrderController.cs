@@ -64,7 +64,7 @@ namespace Proyect1API.Controllers
             }
             else
             {
-                updatedSO.OrderId = updateSaleOrderRequest.OrderId;
+                //updatedSO.OrderId = updateSaleOrderRequest.OrderId;
 
                 updatedSO.Payment = updateSaleOrderRequest.Payment;
 
@@ -89,7 +89,6 @@ namespace Proyect1API.Controllers
                 return Ok(updatedSO);
             }
         }
-
     }
 }
 

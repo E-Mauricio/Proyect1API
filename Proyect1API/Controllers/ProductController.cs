@@ -58,10 +58,10 @@ namespace Proyect1API.Controllers
 
             if (products != null && products.Count > 0)
             {
-                //products.ForEach(product =>
-                //{
-                //    product.ProductImage = GetImagebyProduct(product.Id);
-                //});
+                products.ForEach(product =>
+                {
+                    product.ProductImage = GetImagebyProduct(product.Id);
+                });
             }
             else //When it's null.
             {
