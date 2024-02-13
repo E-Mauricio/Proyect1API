@@ -1,17 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
-using Microsoft.IdentityModel.Tokens;
 using Proyect1API.Data;
 using Proyect1API.Entity;
-using Proyect1API.JwtToken;
 using Proyect1API.Models;
-using System.Formats.Asn1;
-using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
-using System.Security.Claims;
-using System.Text;
 
 namespace Proyect1API.Controllers
 {

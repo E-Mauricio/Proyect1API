@@ -54,7 +54,7 @@ namespace UnitTest
             Assert.Equal("9876", convertedObject.First().DeviceId);
 
             Assert.NotNull(convertedObject);
-        }
+        }       
 
         private List<ConnectedDevice> GetTestData()
         {
@@ -66,10 +66,13 @@ namespace UnitTest
             device1.DeviceId = "9876";
             data.Add(device1);
 
-            var device2 = new ConnectedDevice();
-            device2.PairedDeviceId = "5678";
-            device2.DeviceName = "test2";
-            device2.DeviceId = "5432";
+            var device2 = new ConnectedDevice
+            {
+                PairedDeviceId = "5678",
+                DeviceName = "test2",
+                DeviceId = "5432"
+            };
+
             data.Add(device2);
 
             return data;
